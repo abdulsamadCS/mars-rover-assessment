@@ -142,7 +142,7 @@ class Rover:
         is_left_turn (bool): represent if the turn is left or right.
     
         Returns:
-        Direction: Next updated direction after 1 turn.
+        Direction: represents next updated direction after 1 turn.
     
         """
         if self.direction == Direction.NORTH:
