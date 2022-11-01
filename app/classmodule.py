@@ -1,5 +1,10 @@
 from enum import Enum
 
+class InputSource(Enum):
+    """This is a class for representing input source"""
+    FILE = 1
+    CLI_ARGS = 2
+
 class Direction(Enum):
     """This is a class for one of the four cardinal compass point."""
     NORTH = 'N'
