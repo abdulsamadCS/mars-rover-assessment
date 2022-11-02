@@ -1,3 +1,36 @@
+## How to run the project
+
+- Open project in terminal
+- Create a virtual enivronment: `python3 -m venv venv`
+- Activate virtual environment: `source venv/bin/activate`
+- Run the command: `bash install.sh`
+
+App has been installed.
+
+Demo (for input file):
+```
+$ app input.txt
+Rover1:1 3 N
+Rover2:5 1 E
+$
+```
+
+Demo (command-line):
+Just enter "app" and the program will run with interactive user inputs.
+```
+$ app
+$ Enter upper-right co-ordinates of plateau separated by spaces. Example: "5 5":5 5
+$ Enter number of rovers:1
+$ Enter Rover1 X Y landing co-ordinates and a direction letter separated by spaces. Example: "1 2 N":1 2 N
+$ Enter Rover1 navigation instructions string containing ("L", "R", "M"). Example: "LMLMLMLMM":LMLMLMLMM
+Rover1:1 3 N
+Rover2:5 1 E
+```
+
+- The project also has files to create build with build module. To create, run this command: `python3 -m build`
+- Unit tests can be executed with the command: `pytest -q`
+
+
 ## Mars Rover
 
 A squad of robotic rovers are to be landed by NASA on a plateau on Mars.
