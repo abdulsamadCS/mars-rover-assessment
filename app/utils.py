@@ -12,14 +12,14 @@ def read_and_validate_inputs(input_source, file_name):
         input_source (InputSource): enum represents if input is from file or cli
     
         Returns:
-        inputs (dict): Represent parsed data as dictionary structure from file inputs.
+        inputs (dict): Represent parsed and validated data as dictionary structure from inputs.
 
     """
     if input_source == InputSource.FILE:
         file_contents, parsed_contents = get_inputs_from_file(file_name)
-        return get_and_validate_each_file_input(file_contents,parsed_contents)
     elif input_source == InputSource.CLI_ARGS:
-        return get_inputs_from_cli_with_input_validation()
+        file_contents, parsed_contents = get_inputs_from_cli()
+    return get_and_validate_each_input(file_contents,parsed_contents)
 
 
 def get_inputs_from_file(file_name):
@@ -34,28 +34,46 @@ def get_inputs_from_file(file_name):
         parsed_contents_arr (list): represent list of each parsed line (only values) from input file.
     
     """
-    if not os.path.exists(file_name):
-        print("Input file does not exist.")
-        return None, None
     try:
         with open(file_name, 'r') as f:
             contents = [i for i in filter(None, f.read().split('\n'))]
             parsed_contents = [i.split(":")[1] for i in contents]
     except FileNotFoundError as e:
-        print(str(e))
+        print("Input file does not exist.")
         return None, None
     except IndexError:
         print("Invalid inputs.")
         return None, None
 
     if len(contents) % 2 != 1 or len(parsed_contents) % 2 != 1:
-        print("Input inputs.")
+        print("Invalid inputs.")
         return None, None
     return contents, parsed_contents
 
+def get_inputs_from_cli():
+    """
+        Read and Returns input contents from CLI inputs.
+    
+        Returns:
+        contents_arr (list): represent list CLI inputs.
+        parsed_contents_arr (list): represent list of parsed(only values) CLI inputs.
+    
+    """
+    contents = []
+    contents.append(f"Plateau:{get_cli_input('plateau')}")
+    total_rovers = get_cli_input('total_rovers')
+    for i in range(int(total_rovers)):
+        name = f"Rover{i+1}"
+        contents.append(f"{name} Landing:{get_cli_input('rover_pos',rover_name=name)}")
+        contents.append(f"{name} Instructions:{get_cli_input('rover_nav',rover_name=name)}")
+    try:
+        parsed_contents = [i.split(":")[1] for i in contents]
+    except IndexError:
+        print("Invalid inputs.")
+        return None, None
+    return contents, parsed_contents
 
-
-def get_and_validate_each_file_input(contents_arr,parsed_contents_arr):
+def get_and_validate_each_input(contents_arr,parsed_contents_arr):
     """
         Build and Returns parsed dictionary from file inputs.
     
@@ -81,32 +99,20 @@ def get_and_validate_each_file_input(contents_arr,parsed_contents_arr):
     return inputs
 
 
-def get_inputs_from_cli_with_input_validation():
-    """Build and Returns parsed dictionary from CLI inputs."""
-    inputs = {}
-    inputs['plateau'] = get_and_validate_cli_input('plateau')
-    inputs['total_rovers'] = get_and_validate_cli_input('total_rovers')
-    inputs["rovers"] = [{
-        'name': f"Rover{i+1}",
-        'pos': get_and_validate_cli_input('rover_pos', rover_name=f"Rover{i+1}"),
-        'nav': get_and_validate_cli_input('rover_nav', rover_name=f"Rover{i+1}")
-    } for i in range(int(inputs['total_rovers']))]
-    return inputs
-
-
-def get_and_validate_cli_input(item, rover_name=None):
+def get_cli_input(item, rover_name=None):
+    """Prompt user for user input based on each custom string"""
     if item == 'plateau':
         prompt = 'Enter upper-right co-ordinates of plateau separated by spaces. Example: "5 5":'
-        return get_validated_plateau(input(prompt))
+        return input(prompt)
     elif item == 'total_rovers':
         prompt = 'Enter number of rovers:'
-        return get_validated_rover_count(input(prompt))
+        return input(prompt)
     elif item == 'rover_pos':
         prompt = f'Enter {rover_name} X Y landing co-ordinates and a direction letter separated by spaces. Example: "1 2 N":'
-        return get_validated_rover_pos(input(prompt))
+        return input(prompt)
     elif item == 'rover_nav':
         prompt = f'Enter {rover_name} navigation instructions string containing ("L", "R", "M"). Example: "LMLMLMLMM":'
-        return get_validated_rover_nav(input(prompt))
+        return input(prompt)
 
 
 def get_validated_plateau(plateau):
